@@ -5,54 +5,58 @@ public class CalculatorTest {
 
     @Test
     public void testEmptyString() {
-        assertEquals(0, Calculator.add(""));
+        assertEquals(0, Calculator.add(""), "Empty string should return 0");
     }
 
     @Test
     public void testSingleNumber() {
-        assertEquals(1, Calculator.add("1"));
+        assertEquals(5, Calculator.add("5"), "Single number should return itself");
     }
 
     @Test
-    public void testTwoNumbers() {
-        assertEquals(3, Calculator.add("1,2"));
+    public void testMultipleNumbersWithCommaDelimiter() {
+        assertEquals(10, Calculator.add("1,2,3,4"), "Should return the sum of the numbers");
     }
 
     @Test
-    public void testMultipleNumbers() {
-        assertEquals(10, Calculator.add("1,2,3,4"));
+    public void testNewLineDelimiter() {
+        assertEquals(6, Calculator.add("1\n2,3"), "Should handle new line as a delimiter");
     }
 
     @Test
-    public void testNewlineDelimiter() {
-        assertEquals(6, Calculator.add("1\n2,3"));
+    public void testCustomDelimiterSingle() {
+        assertEquals(15, Calculator.add("//;\n1;2;3;4;5"), "Should handle custom single-character delimiter");
     }
 
     @Test
-    public void testCustomDelimiter() {
-        assertEquals(6, Calculator.add("//;\n1;2;3"));
+    public void testCustomDelimiterMultiple() {
+        assertEquals(10, Calculator.add("//[*][%]\n1*2%3*4"), "Should handle custom multiple delimiters");
     }
 
     @Test
-    public void testMultiCharacterDelimiter() {
-        assertEquals(6, Calculator.add("//[***]\n1***2***3"));
+    public void testCustomDelimiterWithSpecialCharacters() {
+        assertEquals(6, Calculator.add("//[***]\n1***2***3"), "Should handle custom delimiters with special characters");
     }
 
     @Test
-    public void testMultipleDelimiters() {
-        assertEquals(6, Calculator.add("//[*][%]\n1*2%3"));
+    public void testIgnoreNumbersGreaterThan1000() {
+        assertEquals(2, Calculator.add("2,1001"), "Numbers greater than 1000 should be ignored");
     }
 
     @Test
     public void testNegativeNumbers() {
-        Exception exception = assertThrows(IllegalArgumentException.class, () -> {
-            Calculator.add("1,-2,3");
-        });
-        assertEquals("Negative numbers not allowed: [-2]", exception.getMessage());
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> Calculator.add("1,-2,3,-4"), "Should throw exception for negative numbers");
+        assertEquals("negative numbers not allowed < [-2, -4] >", exception.getMessage());
     }
 
     @Test
-    public void testIgnoreLargeNumbers() {
-        assertEquals(2, Calculator.add("2,1001"));
+    public void testInvalidCustomDelimiterFormat() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> Calculator.add("//;1;2;3"), "Should throw exception for invalid delimiter format");
+        assertEquals("Invalid input format: Missing newline character after custom delimiter", exception.getMessage());
+    }
+
+    @Test
+    public void testMixedDelimiters() {
+        assertEquals(15, Calculator.add("1\n2,3;4\n5"), "Should handle mixed delimiters");
     }
 }
